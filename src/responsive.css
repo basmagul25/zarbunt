@@ -1140,3 +1140,487 @@ input:focus-visible {
     3px;
 }
 
+/* =========================================================
+   NAVBAR DROPDOWN (MEGA MENU)
+   Is poore block ko src/responsive.css ke BILKUL AAKHIR mein paste karo
+========================================================= */
+
+.navbar-item {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Chhoti screen par dropdown nahi dikhta (wahan hamburger menu hai) */
+.navbar-mega {
+  display: none;
+}
+
+@media (min-width: 801px) {
+  /* Dropdown navbar ke bahar tak nikalna chahiye, isliye clipping band */
+  .navbar {
+    overflow: visible;
+    z-index: 45;
+  }
+
+  .navbar-inner {
+    overflow: visible;
+  }
+
+  .navbar-links {
+    height: 100%;
+  }
+
+  .navbar-item {
+    height: 100%;
+  }
+
+  /* Menu khula ho to upar wale link ke neeche line dikhe */
+  .navbar-item-open .navbar-link::after {
+    transform: scaleX(1);
+  }
+
+  .navbar-mega {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: #fff;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 22px 40px rgba(23, 21, 18, 0.08);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease,
+      visibility 0.18s;
+  }
+
+  .navbar-mega-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .navbar-mega-inner {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 34px clamp(20px, 4vw, 58px) 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 34px 56px;
+  }
+
+  .mega-column ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .mega-heading {
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 0 0 12px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    background: transparent;
+    text-align: left;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .mega-heading-link {
+    cursor: pointer;
+  }
+
+  .mega-heading-link:hover {
+    color: var(--accent);
+  }
+
+  .mega-link {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    color: var(--muted);
+    transition:
+      color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .mega-link:hover,
+  .mega-link:focus-visible {
+    color: var(--ink);
+    transform: translateX(3px);
+  }
+}
+
+/* =========================================================
+   PRODUCT DETAILS: PHOTO GALLERY, SIZES, DESCRIPTION
+   Is poore block ko src/responsive.css ke BILKUL AAKHIR mein paste karo
+========================================================= */
+
+/* Asli product photo */
+.details-main-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Photos ki chhoti strip */
+.details-thumbs {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+
+.details-thumb {
+  width: 56px;
+  height: 68px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: #fff;
+  opacity: 0.75;
+  cursor: pointer;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.details-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.details-thumb:hover {
+  opacity: 1;
+}
+
+.details-thumb-active {
+  opacity: 1;
+  border-color: #171512;
+}
+
+/* Description mein enter se naye line banen */
+.details-description {
+  white-space: pre-line;
+}
+
+/* Size chunne wala hissa */
+.size-section {
+  margin-top: 26px;
+}
+
+.size-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.size-heading p {
+  margin: 0;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: #706960;
+}
+
+.size-error {
+  font-size: 10px;
+  color: #a3402f;
+}
+
+.size-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.size-option {
+  min-width: 46px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #c8c0b6;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: #171512;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.size-option:hover {
+  border-color: #171512;
+}
+
+.size-option-active {
+  background: #171512;
+  border-color: #171512;
+  color: #fff;
+}
+
+/* Out of stock par buttons dim */
+.details-add-cart:disabled,
+.details-buy-now:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cart mein size ki line */
+.cart-item-size {
+  margin: 2px 0 6px;
+  font-size: 11px;
+  color: #77716a;
+}
+
+/* Admin form: textarea aur lambe fields */
+.admin-product-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #dedbd3;
+  background: #fff;
+  padding: 13px 12px;
+  color: #292a24;
+  font: inherit;
+  font-size: 14px;
+  border-radius: 0;
+  resize: vertical;
+}
+
+.admin-product-form textarea:focus {
+  outline: 1px solid #8a7557;
+  border-color: #8a7557;
+}
+
+.admin-product-form label:has(textarea) {
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   SORT AUR PRICE FILTER BAR
+   Is poore block ko src/responsive.css ke BILKUL AAKHIR mein paste karo
+========================================================= */
+
+.products-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 32px;
+  margin: 0 0 28px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.price-filter,
+.sort-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.price-filter > span,
+.sort-select > span {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: var(--muted);
+}
+
+.price-filter em {
+  font-style: normal;
+  color: var(--muted);
+}
+
+.price-filter input {
+  width: 92px;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  border-radius: 0;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.price-filter input::-webkit-outer-spin-button,
+.price-filter input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.price-filter input:focus,
+.sort-select select:focus {
+  border-color: var(--ink);
+}
+
+.toolbar-clear {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  cursor: pointer;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: var(--ink);
+}
+
+.toolbar-clear:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.sort-select select {
+  height: 36px;
+  min-width: 190px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .products-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .price-filter,
+  .sort-select {
+    justify-content: space-between;
+  }
+
+  .price-filter input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+
+  .sort-select select {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* =========================================================
+   STOCK: SOLD OUT SIZES, KAM STOCK KA NOTE, ADMIN EDITOR
+   Is poore block ko src/responsive.css ke BILKUL AAKHIR mein paste karo
+========================================================= */
+
+/* Jis size ka stock khatam ho */
+.size-option-soldout,
+.size-option-soldout:hover {
+  border-style: dashed;
+  border-color: #cfc8bd;
+  color: #a39d93;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* "Only 2 left in this size" jaisa note */
+.stock-note {
+  margin: 12px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: #a3402f;
+}
+
+/* Product card: sold out */
+.product-card-soldout img,
+.product-card-soldout .product-art {
+  opacity: 0.55;
+}
+
+.quick-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Admin: sizes aur stock ki rows */
+.size-stock-editor {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.size-stock-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #66645d;
+}
+
+.size-stock-row {
+  display: grid;
+  grid-template-columns: 1fr 130px 42px;
+  gap: 10px;
+}
+
+.size-stock-row button,
+.size-stock-actions button {
+  border: 1px solid #dedbd3;
+  background: #fff;
+  color: #292a24;
+  cursor: pointer;
+}
+
+.size-stock-row button {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.size-stock-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.size-stock-actions button {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.size-stock-row button:hover,
+.size-stock-actions button:hover {
+  border-color: #292a24;
+}

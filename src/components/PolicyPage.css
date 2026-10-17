@@ -1,0 +1,227 @@
+.policy-page {
+  min-height: 100vh;
+  background: #f7f5f0;
+  color: #20201d;
+  padding: 32px 5vw 90px;
+}
+
+.policy-container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.policy-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #d9d5cc;
+}
+
+.policy-back {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #55524b;
+}
+
+.policy-back:hover {
+  color: #111;
+}
+
+.policy-brand {
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  font-weight: 600;
+  color: #77736b;
+}
+
+/* Upar ki patti: dusre pages par jane ke liye */
+.policy-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 22px 0 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.policy-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.policy-tab {
+  flex: 0 0 auto;
+  padding: 11px 16px;
+  border: 1px solid #d6d1c8;
+  background: transparent;
+  cursor: pointer;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #55524b;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.policy-tab:hover {
+  border-color: #20201d;
+  color: #20201d;
+}
+
+.policy-tab-active,
+.policy-tab-active:hover {
+  background: #20201d;
+  border-color: #20201d;
+  color: #fff;
+}
+
+.policy-article {
+  margin-top: 20px;
+  padding: 48px 52px 56px;
+  background: #fff;
+  border: 1px solid #dfdbd2;
+}
+
+.policy-eyebrow {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 2.2px;
+  font-weight: 600;
+  color: #77736b;
+}
+
+.policy-article h1 {
+  margin: 10px 0 8px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(32px, 5vw, 46px);
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.policy-updated {
+  margin: 0 0 26px;
+  font-size: 12px;
+  color: #8a857c;
+}
+
+.policy-intro {
+  margin: 0 0 34px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #55524b;
+}
+
+.policy-section {
+  padding-top: 26px;
+  margin-top: 26px;
+  border-top: 1px solid #ebe8e1;
+}
+
+.policy-section h2 {
+  margin: 0 0 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 400;
+}
+
+.policy-section p,
+.policy-section li {
+  font-size: 14.5px;
+  line-height: 1.85;
+  color: #55524b;
+}
+
+.policy-section p {
+  margin: 0 0 12px;
+}
+
+.policy-section ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.policy-section li {
+  margin-bottom: 6px;
+}
+
+/* Contact page */
+.contact-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 22px;
+  background: #f7f5f0;
+  border: 1px solid #e6e1d8;
+}
+
+.contact-card span {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #77736b;
+}
+
+.contact-card a,
+.contact-card strong {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #20201d;
+  word-break: break-word;
+}
+
+.contact-card a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.policy-mail-btn {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 16px 26px;
+  background: #20201d;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 1.8px;
+  text-decoration: none;
+}
+
+.policy-mail-btn:hover {
+  opacity: 0.88;
+}
+
+/* Footer ke neeche wale PRIVACY / TERMS links */
+.footer-bottom a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-bottom a:hover {
+  color: #fff;
+}
+
+@media (max-width: 700px) {
+  .policy-page {
+    padding: 20px 16px 60px;
+  }
+
+  .policy-article {
+    padding: 30px 22px 38px;
+  }
+
+  .contact-cards {
+    grid-template-columns: 1fr;
+  }
+}

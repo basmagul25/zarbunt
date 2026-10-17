@@ -1,8 +1,9 @@
-import { useCart } from "../CartContext";
+import { useCart } from "../useCart";
 
 function CartDrawer({
   isOpen,
   onClose,
+  onCheckout,
 }) {
   const {
     cart,
@@ -12,21 +13,27 @@ function CartDrawer({
     removeFromCart,
   } = useCart();
 
-  const subtotal =
-    cart.reduce(
-      (total, item) =>
-        total +
-        item.price *
-          item.quantity,
-      0
-    );
+  const subtotal = cart.reduce(
+    (total, item) =>
+      total +
+      Number(item.price || 0) *
+        Number(item.quantity || 0),
+    0
+  );
 
-  const handleCheckout =
-    () => {
-      alert(
-        "Checkout is currently available as a frontend demo. No real payment is processed."
-      );
-    };
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      return;
+    }
+
+    onClose();
+
+    if (onCheckout) {
+      setTimeout(() => {
+        onCheckout();
+      }, 150);
+    }
+  };
 
   return (
     <>
@@ -43,9 +50,7 @@ function CartDrawer({
 
       <aside
         className={`cart-drawer ${
-          isOpen
-            ? "cart-open"
-            : ""
+          isOpen ? "cart-open" : ""
         }`}
       >
         {/* HEADER */}
@@ -64,6 +69,7 @@ function CartDrawer({
           <button
             className="cart-close"
             onClick={onClose}
+            aria-label="Close cart"
           >
             ×
           </button>
@@ -72,8 +78,7 @@ function CartDrawer({
         {/* CONTENT */}
 
         <div className="cart-content">
-          {cart.length ===
-          0 ? (
+          {cart.length === 0 ? (
             <div className="empty-cart">
               <div className="empty-cart-icon">
                 🛒
@@ -84,9 +89,8 @@ function CartDrawer({
               </h3>
 
               <p>
-                Discover something
-                beautiful and add it
-                to your collection.
+                Discover something beautiful
+                and add it to your collection.
               </p>
 
               <button
@@ -98,84 +102,102 @@ function CartDrawer({
             </div>
           ) : (
             <div className="cart-items">
-              {cart.map(
-                (item) => (
-                  <div
-                    className="cart-item"
-                    key={item.id}
-                  >
-                    {/* PRODUCT IMAGE */}
+              {cart.map((item) => (
+                <div
+                  className="cart-item"
+                  key={`${item.productId}-${item.size || ""}`}
+                >
+                  {/* PRODUCT IMAGE */}
 
-                    <div
-                      className={`cart-item-image ${item.artClass}`}
-                    >
+                  <div
+                    className={`cart-item-image ${
+                      item.artClass || ""
+                    }`}
+                  >
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        loading="lazy"
+                      />
+                    ) : (
                       <span>
                         {item.initial}
                       </span>
-                    </div>
+                    )}
+                  </div>
 
-                    {/* PRODUCT INFO */}
+                  {/* PRODUCT INFO */}
 
-                    <div className="cart-item-info">
-                      <p className="cart-item-category">
-                        {item.category}
+                  <div className="cart-item-info">
+                    <p className="cart-item-category">
+                      {item.category}
+                    </p>
+
+                    <h3>
+                      {item.name}
+                    </h3>
+
+                    {item.size && (
+                      <p className="cart-item-size">
+                        Size: {item.size}
                       </p>
+                    )}
 
-                      <h3>
-                        {item.name}
-                      </h3>
+                    <p className="cart-item-price">
+                      Rs.{" "}
+                      {Number(
+                        item.price
+                      ).toLocaleString()}
+                    </p>
 
-                      <p className="cart-item-price">
-                        Rs.{" "}
-                        {item.price.toLocaleString()}
-                      </p>
+                    {/* QUANTITY */}
 
-                      {/* QUANTITY */}
-
-                      <div className="cart-item-bottom">
-                        <div className="quantity-controls">
-                          <button
-                            onClick={() =>
-                              decreaseQuantity(
-                                item.id
-                              )
-                            }
-                          >
-                            −
-                          </button>
-
-                          <span>
-                            {item.quantity}
-                          </span>
-
-                          <button
-                            onClick={() =>
-                              addToCart(
-                                item
-                              )
-                            }
-                          >
-                            +
-                          </button>
-                        </div>
-
-                        {/* REMOVE */}
-
+                    <div className="cart-item-bottom">
+                      <div className="quantity-controls">
                         <button
-                          className="remove-item"
                           onClick={() =>
-                            removeFromCart(
-                              item.id
+                            decreaseQuantity(
+                              item.productId,
+                              item.size
                             )
                           }
+                          aria-label="Decrease quantity"
                         >
-                          REMOVE
+                          −
+                        </button>
+
+                        <span>
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            addToCart(item)
+                          }
+                          aria-label="Increase quantity"
+                        >
+                          +
                         </button>
                       </div>
+
+                      {/* REMOVE */}
+
+                      <button
+                        className="remove-item"
+                        onClick={() =>
+                          removeFromCart(
+                            item.productId,
+                            item.size
+                          )
+                        }
+                      >
+                        REMOVE
+                      </button>
                     </div>
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -196,15 +218,13 @@ function CartDrawer({
             </div>
 
             <p className="cart-note">
-              Shipping and taxes
-              calculated at checkout.
+              Shipping and taxes calculated
+              at checkout.
             </p>
 
             <button
               className="checkout-btn"
-              onClick={
-                handleCheckout
-              }
+              onClick={handleCheckout}
             >
               PROCEED TO CHECKOUT →
             </button>

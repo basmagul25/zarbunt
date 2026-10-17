@@ -36,8 +36,7 @@ function Newsletter() {
         <p className="newsletter-description">
           Sign up for new collection
           launches, exclusive edits
-          and updates from The Fabric
-          Store.
+          and updates from Zarbunt.
         </p>
 
         {submitted ? (

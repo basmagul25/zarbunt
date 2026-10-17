@@ -7,10 +7,12 @@ import "./responsive.css";
 
 import { CartProvider } from "./CartContext.jsx";
 import { WishlistProvider } from "./WishlistContext.jsx";
+import { AuthProvider } from "./AuthContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-
+    <AuthProvider>
+      
     <CartProvider>
 
       <WishlistProvider>
@@ -20,6 +22,8 @@ createRoot(document.getElementById("root")).render(
       </WishlistProvider>
 
     </CartProvider>
+
+    </AuthProvider>
 
   </StrictMode>
 );

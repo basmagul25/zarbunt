@@ -1,5 +1,7 @@
-import { useCart } from "../CartContext";
+
+import { useCart } from "../useCart";
 import { useWishlist } from "../WishlistContext";
+import { useAuth } from "../AuthContext";
 
 const SearchIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -16,7 +18,11 @@ const UserIcon = () => (
 );
 
 const HeartIcon = ({ filled = false }) => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" className={filled ? "filled" : ""}>
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    className={filled ? "filled" : ""}
+  >
     <path d="M20.8 8.7c0 5-8.8 10.1-8.8 10.1S3.2 13.7 3.2 8.7A4.6 4.6 0 0 1 12 6.3a4.6 4.6 0 0 1 8.8 2.4Z" />
   </svg>
 );
@@ -34,9 +40,11 @@ function Header({
   onOpenSearch,
   onOpenMenu,
   onOpenAccount,
+  onOpenAdmin,
 }) {
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
+  const { user } = useAuth();
 
   return (
     <header className="header">
@@ -46,12 +54,18 @@ function Header({
           onClick={onOpenMenu}
           aria-label="Open menu"
         >
-          <span></span><span></span><span></span>
+          <span />
+          <span />
+          <span />
         </button>
 
         <button
           className="header-shop-link"
-          onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
+          onClick={() =>
+            document
+              .getElementById("products")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
         >
           SHOP
         </button>
@@ -59,15 +73,24 @@ function Header({
 
       <button
         className="logo logo-button"
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={() =>
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          })
+        }
         aria-label="The Fabric Store home"
       >
-        <span>THE FABRIC</span>
-        <strong>STORE</strong>
+        <span>THE HOUSE OF</span>
+        <strong>ZARBUNT</strong>
       </button>
 
       <div className="header-right">
-        <button className="icon-btn" onClick={onOpenSearch} aria-label="Search">
+        <button
+          className="icon-btn"
+          onClick={onOpenSearch}
+          aria-label="Search"
+        >
           <SearchIcon />
         </button>
 
@@ -77,12 +100,36 @@ function Header({
           aria-label="Wishlist"
         >
           <HeartIcon />
-          {wishlistCount > 0 && <span className="header-count">{wishlistCount}</span>}
+          {wishlistCount > 0 && (
+            <span className="header-count">
+              {wishlistCount}
+            </span>
+          )}
         </button>
 
-        <button className="icon-btn desktop-account" onClick={onOpenAccount} aria-label="Account">
+        <button
+          className="icon-btn desktop-account"
+          onClick={onOpenAccount}
+          aria-label="Account"
+        >
           <UserIcon />
         </button>
+
+        {user?.role === "admin" && (
+          <button
+            className="admin-header-link"
+            onClick={onOpenAdmin}
+            aria-label="Open Admin Dashboard"
+            title="Open Admin Dashboard"
+          >
+            <span className="admin-header-symbol">
+              +
+            </span>
+            <span className="admin-header-text">
+              Admin
+            </span>
+          </button>
+        )}
 
         <button
           className="icon-btn icon-with-count"
@@ -90,7 +137,11 @@ function Header({
           aria-label="Shopping bag"
         >
           <BagIcon />
-          {cartCount > 0 && <span className="header-count">{cartCount}</span>}
+          {cartCount > 0 && (
+            <span className="header-count">
+              {cartCount}
+            </span>
+          )}
         </button>
       </div>
     </header>

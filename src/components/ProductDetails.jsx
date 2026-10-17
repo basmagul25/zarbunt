@@ -1,10 +1,10 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { useCart } from "../CartContext";
+import { useCart } from "../useCart";
 import { useWishlist } from "../WishlistContext";
+
+const DEFAULT_DESCRIPTION =
+  "Thoughtfully selected fabric with a refined texture and contemporary finish. Designed for effortless styling and everyday elegance.";
 
 function ProductDetails({
   product,
@@ -12,94 +12,161 @@ function ProductDetails({
   onClose,
   onBuyNow,
 }) {
-  const { addToCart } =
-    useCart();
+  const { cart, addToCart } = useCart();
 
-  const {
-    toggleWishlist,
-    isInWishlist,
-  } = useWishlist();
+  const { toggleWishlist, isInWishlist } =
+    useWishlist();
 
-  const [quantity, setQuantity] =
-    useState(1);
+  const [quantity, setQuantity] = useState(1);
+  const [size, setSize] = useState("");
+  const [sizeError, setSizeError] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
+  const [added, setAdded] = useState(false);
+  const [stockMessage, setStockMessage] = useState("");
 
-  /* Reset quantity every time
-     another product is opened */
+  /* Main photo + extra photos, duplicate hata kar */
+
+  const gallery = useMemo(() => {
+    if (!product) return [];
+
+    const list = [
+      product.image,
+      ...(Array.isArray(product.images)
+        ? product.images
+        : []),
+    ].filter(Boolean);
+
+    return [...new Set(list)];
+  }, [product]);
+
+  const sizes = Array.isArray(product?.sizes)
+    ? product.sizes
+    : [];
+
+  /* Har nayi product khulne par sab reset */
 
   useEffect(() => {
     if (isOpen) {
       setQuantity(1);
+      setSize("");
+      setSizeError(false);
+      setActiveImage(0);
+      setAdded(false);
+      setStockMessage("");
     }
   }, [product, isOpen]);
 
-  if (
-    !product ||
-    !isOpen
-  ) {
+  if (!product || !isOpen) {
     return null;
   }
 
-  const liked =
-    isInWishlist(product.id);
+  const liked = isInWishlist(
+    product._id || product.id
+  );
+
+  /* Har size ka stock (null = is size ka stock track nahi hota) */
+
+  const stockEntries = Array.isArray(product.stockBySize)
+    ? product.stockBySize
+    : [];
+
+  const stockOf = (option) => {
+    const entry = stockEntries.find(
+      (item) => item.size === option
+    );
+
+    return entry ? entry.stock : null;
+  };
+
+  const allSoldOut =
+    sizes.length > 0 &&
+    stockEntries.length > 0 &&
+    sizes.every((option) => stockOf(option) === 0);
+
+  const outOfStock =
+    product.inStock === false || allSoldOut;
+
+  const selectedStock = size ? stockOf(size) : null;
 
   /* --------------------------------
      QUANTITY
   -------------------------------- */
 
   const increaseQuantity = () => {
-    setQuantity(
-      (current) =>
-        current + 1
+    setQuantity((current) =>
+      selectedStock !== null
+        ? Math.min(current + 1, selectedStock)
+        : current + 1
     );
   };
 
   const decreaseQuantity = () => {
-    setQuantity(
-      (current) =>
-        current > 1
-          ? current - 1
-          : 1
+    setQuantity((current) =>
+      current > 1 ? current - 1 : 1
     );
   };
 
   /* --------------------------------
-     ADD SELECTED QUANTITY
+     ADD TO CART (size zaroori agar sizes hain)
   -------------------------------- */
 
-  const addProductToCart =
-    () => {
-      for (
-        let i = 0;
-        i < quantity;
-        i++
-      ) {
-        addToCart(product);
-      }
-    };
+  const addProductToCart = () => {
+    if (sizes.length > 0 && !size) {
+      setSizeError(true);
+      return false;
+    }
 
-  /* --------------------------------
-     ADD TO CART
-  -------------------------------- */
+    // Cart mein pehle se jitne hain unko mila kar stock se zyada na ho
+    const productId = product._id || product.id;
 
-  const handleAddToCart =
-    () => {
-      addProductToCart();
-    };
+    const inCart =
+      cart.find(
+        (item) =>
+          item.productId === productId &&
+          (item.size || "") === size
+      )?.quantity || 0;
 
-  /* --------------------------------
-     BUY NOW
-  -------------------------------- */
+    if (
+      selectedStock !== null &&
+      inCart + quantity > selectedStock
+    ) {
+      const remaining = selectedStock - inCart;
 
-  const handleBuyNow =
-    () => {
-      addProductToCart();
+      setStockMessage(
+        remaining > 0
+          ? `Only ${remaining} more available in size ${size}.`
+          : `You already have all available pieces of size ${size} in your cart.`
+      );
 
-      onClose();
+      return false;
+    }
 
-      if (onBuyNow) {
-        onBuyNow();
-      }
-    };
+    setStockMessage("");
+
+    addToCart(product, { size, quantity });
+
+    return true;
+  };
+
+  const handleAddToCart = () => {
+    if (addProductToCart()) {
+      setAdded(true);
+
+      setTimeout(() => setAdded(false), 1800);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!addProductToCart()) {
+      return;
+    }
+
+    onClose();
+
+    if (onBuyNow) {
+      onBuyNow();
+    }
+  };
 
   return (
     <div
@@ -127,11 +194,23 @@ function ProductDetails({
 
           <div className="product-details-image">
             <div
-              className={`product-details-art ${product.artClass}`}
+              className={`product-details-art ${
+                product.artClass || ""
+              }`}
             >
-              <span>
-                {product.initial}
-              </span>
+              {gallery.length > 0 ? (
+                <img
+                  className="details-main-image"
+                  src={gallery[activeImage]}
+                  alt={product.name}
+                  onError={(event) => {
+                    event.currentTarget.style.display =
+                      "none";
+                  }}
+                />
+              ) : (
+                <span>{product.initial}</span>
+              )}
             </div>
 
             {product.badge && (
@@ -146,6 +225,30 @@ function ProductDetails({
                 {product.badge}
               </span>
             )}
+
+            {gallery.length > 1 && (
+              <div className="details-thumbs">
+                {gallery.map((src, index) => (
+                  <button
+                    type="button"
+                    key={src}
+                    className={`details-thumb ${
+                      index === activeImage
+                        ? "details-thumb-active"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      setActiveImage(index)
+                    }
+                    aria-label={`View photo ${
+                      index + 1
+                    }`}
+                  >
+                    <img src={src} alt="" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* INFORMATION */}
@@ -153,22 +256,27 @@ function ProductDetails({
           <div className="product-details-info">
             <p className="product-details-category">
               {product.category}
+              {product.subCategory
+                ? ` · ${product.subCategory}`
+                : ""}
             </p>
 
-            <h2>
-              {product.name}
-            </h2>
+            <h2>{product.name}</h2>
 
             <div className="details-price">
               <strong>
                 Rs.{" "}
-                {product.price.toLocaleString()}
+                {Number(
+                  product.price
+                ).toLocaleString()}
               </strong>
 
               {product.oldPrice && (
                 <span>
                   Rs.{" "}
-                  {product.oldPrice.toLocaleString()}
+                  {Number(
+                    product.oldPrice
+                  ).toLocaleString()}
                 </span>
               )}
             </div>
@@ -176,12 +284,81 @@ function ProductDetails({
             <div className="details-divider"></div>
 
             <p className="details-description">
-              Thoughtfully selected fabric
-              with a refined texture and
-              contemporary finish. Designed
-              for effortless styling and
-              everyday elegance.
+              {product.description?.trim() ||
+                DEFAULT_DESCRIPTION}
             </p>
+
+            {/* SIZE */}
+
+            {sizes.length > 0 && (
+              <div className="size-section">
+                <div className="size-heading">
+                  <p>SIZE</p>
+
+                  {sizeError && (
+                    <span className="size-error">
+                      Please select a size
+                    </span>
+                  )}
+                </div>
+
+                <div className="size-options">
+                  {sizes.map((option) => {
+                    const left = stockOf(option);
+                    const soldOut = left === 0;
+
+                    return (
+                      <button
+                        type="button"
+                        key={option}
+                        disabled={soldOut}
+                        title={
+                          soldOut
+                            ? "Sold out"
+                            : undefined
+                        }
+                        className={`size-option ${
+                          size === option
+                            ? "size-option-active"
+                            : ""
+                        } ${
+                          soldOut
+                            ? "size-option-soldout"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSize(option);
+                          setSizeError(false);
+                          setStockMessage("");
+
+                          setQuantity((current) =>
+                            left !== null
+                              ? Math.min(current, left)
+                              : current
+                          );
+                        }}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {selectedStock !== null &&
+                  selectedStock <= 5 && (
+                    <p className="stock-note">
+                      Only {selectedStock} left in this
+                      size
+                    </p>
+                  )}
+
+                {stockMessage && (
+                  <p className="stock-note">
+                    {stockMessage}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* QUANTITY */}
 
@@ -189,23 +366,13 @@ function ProductDetails({
               <p>QUANTITY</p>
 
               <div className="details-quantity">
-                <button
-                  onClick={
-                    decreaseQuantity
-                  }
-                >
+                <button onClick={decreaseQuantity}>
                   −
                 </button>
 
-                <span>
-                  {quantity}
-                </span>
+                <span>{quantity}</span>
 
-                <button
-                  onClick={
-                    increaseQuantity
-                  }
-                >
+                <button onClick={increaseQuantity}>
                   +
                 </button>
               </div>
@@ -216,18 +383,20 @@ function ProductDetails({
             <div className="details-actions">
               <button
                 className="details-add-cart"
-                onClick={
-                  handleAddToCart
-                }
+                onClick={handleAddToCart}
+                disabled={outOfStock}
               >
-                ADD TO CART
+                {outOfStock
+                  ? "OUT OF STOCK"
+                  : added
+                  ? "ADDED ✓"
+                  : "ADD TO CART"}
               </button>
 
               <button
                 className="details-buy-now"
-                onClick={
-                  handleBuyNow
-                }
+                onClick={handleBuyNow}
+                disabled={outOfStock}
               >
                 BUY NOW →
               </button>
@@ -245,9 +414,7 @@ function ProductDetails({
                 toggleWishlist(product)
               }
             >
-              {liked
-                ? "♥"
-                : "♡"}
+              {liked ? "♥" : "♡"}
 
               <span>
                 {liked
@@ -255,43 +422,6 @@ function ProductDetails({
                   : "ADD TO WISHLIST"}
               </span>
             </button>
-
-            {/* FEATURES */}
-
-            <div className="details-features">
-              <div>
-                <strong>
-                  DELIVERY
-                </strong>
-
-                <span>
-                  Nationwide delivery
-                  across Pakistan
-                </span>
-              </div>
-
-              <div>
-                <strong>
-                  QUALITY
-                </strong>
-
-                <span>
-                  Carefully selected
-                  premium fabrics
-                </span>
-              </div>
-
-              <div>
-                <strong>
-                  SHOPPING
-                </strong>
-
-                <span>
-                  COD available across
-                  Pakistan
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

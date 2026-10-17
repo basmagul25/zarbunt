@@ -78,7 +78,7 @@ function Hero() {
 
         <div className="hero-image-text">
 
-          <span>THE FABRIC STORE</span>
+          <span>ZARBUNT</span>
 
           <strong>NEW IN</strong>
 

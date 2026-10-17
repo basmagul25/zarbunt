@@ -1,4 +1,56 @@
-function Footer() {
+import { STORE_INFO } from "../storeInfo";
+
+function Footer({ onOpenPolicy, onCategorySelect }) {
+  // href="#" wale link par click karne se page upar na jaye
+  const handle = (event, action) => {
+    event.preventDefault();
+
+    if (action) {
+      action();
+    }
+  };
+
+  const shopLink = (label, category) => (
+    <a
+      href="#"
+      onClick={(event) =>
+        handle(
+          event,
+          onCategorySelect
+            ? () => onCategorySelect(category)
+            : null
+        )
+      }
+    >
+      {label}
+    </a>
+  );
+
+  const policyLink = (label, page) => (
+    <a
+      href="#"
+      onClick={(event) =>
+        handle(
+          event,
+          onOpenPolicy ? () => onOpenPolicy(page) : null
+        )
+      }
+    >
+      {label}
+    </a>
+  );
+
+  const socialLink = (label, url) =>
+    url ? (
+      <a href={url} target="_blank" rel="noreferrer">
+        {label}
+      </a>
+    ) : (
+      <a href="#" onClick={(event) => handle(event)}>
+        {label}
+      </a>
+    );
+
   return (
     <footer className="footer">
 
@@ -6,9 +58,9 @@ function Footer() {
 
         <div className="footer-brand">
           <h2>
-            THE FABRIC
+            THE HOUSE OF
             <br />
-            STORE
+            ZARBUNT
           </h2>
 
           <p>
@@ -20,28 +72,29 @@ function Footer() {
         <div className="footer-column">
           <h3>SHOP</h3>
 
-          <a href="#">New Arrivals</a>
-          <a href="#">Unstitched</a>
-          <a href="#">Ready To Wear</a>
-          <a href="#">Formal</a>
-          <a href="#">Sale</a>
+          {shopLink("New Arrivals", "New Arrivals")}
+          {shopLink("Unstitched", "Unstitched")}
+          {shopLink("Ready To Wear", "Ready To Wear")}
+          {shopLink("Formal", "Formal")}
+          {shopLink("Sale", "Sale")}
         </div>
 
         <div className="footer-column">
           <h3>HELP</h3>
 
-          <a href="#">Contact Us</a>
-          <a href="#">Delivery Information</a>
-          <a href="#">Returns & Exchange</a>
-          <a href="#">FAQs</a>
+          {policyLink("Contact Us", "contact")}
+          {policyLink("Delivery Information", "shipping")}
+          {policyLink("Returns & Exchange", "returns")}
+          {policyLink("Terms & Conditions", "terms")}
+          {policyLink("Privacy Policy", "privacy")}
         </div>
 
         <div className="footer-column">
           <h3>FOLLOW</h3>
 
-          <a href="#">Instagram</a>
-          <a href="#">Facebook</a>
-          <a href="#">TikTok</a>
+          {socialLink("Instagram", STORE_INFO.social.instagram)}
+          {socialLink("Facebook", STORE_INFO.social.facebook)}
+          {socialLink("TikTok", STORE_INFO.social.tiktok)}
         </div>
 
       </div>
@@ -49,12 +102,36 @@ function Footer() {
       <div className="footer-bottom">
 
         <p>
-          © 2026 The Fabric Store. All rights reserved.
+          © 2026 {STORE_INFO.name}. All rights reserved.
         </p>
 
         <div>
-          <span>PRIVACY</span>
-          <span>TERMS</span>
+          {onOpenPolicy ? (
+            <>
+              <a
+                href="#"
+                onClick={(event) =>
+                  handle(event, () => onOpenPolicy("privacy"))
+                }
+              >
+                PRIVACY
+              </a>
+
+              <a
+                href="#"
+                onClick={(event) =>
+                  handle(event, () => onOpenPolicy("terms"))
+                }
+              >
+                TERMS
+              </a>
+            </>
+          ) : (
+            <>
+              <span>PRIVACY</span>
+              <span>TERMS</span>
+            </>
+          )}
         </div>
 
       </div>

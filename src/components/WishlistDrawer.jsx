@@ -1,6 +1,5 @@
 import { useWishlist } from "../WishlistContext";
-import { useCart } from "../CartContext";
-
+import { useCart } from "../useCart";
 function WishlistDrawer({
   isOpen,
   onClose,
@@ -14,6 +13,22 @@ function WishlistDrawer({
   const { addToCart } = useCart();
 
   const moveToCart = (product) => {
+    // Size wale product ka size detail page par chunna hota hai
+    if (
+      Array.isArray(product.sizes) &&
+      product.sizes.length > 0
+    ) {
+      onClose();
+
+      window.dispatchEvent(
+        new CustomEvent("openProductDetails", {
+          detail: product,
+        })
+      );
+
+      return;
+    }
+
     addToCart(product);
     toggleWishlist(product);
     onClose();
