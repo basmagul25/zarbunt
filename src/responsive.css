@@ -1624,3 +1624,16 @@ input:focus-visible {
 .size-stock-actions button:hover {
   border-color: #292a24;
 }
+
+/* Phone par bhi account (insaan) ka icon dikhao */
+@media (max-width: 800px) {
+  .header-right .desktop-account {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .header-right .icon-btn {
+    width: 34px;
+  }
+}
